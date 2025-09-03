@@ -1,2 +1,2 @@
 # kubernetes-tutorials
-This repo is dedicated to kubernetes learners, it has practical example of Yaml code that consist of azure kubernetes service and kubernetes native service. each Yaml document it's on its own
+This repo is dedicated to kubernetes learners, it has practical example of Yaml code that consist of azure kubernetes service and kubernetes native service. each Yaml document it's on its own and doesn't belong to any other file
