@@ -1,6 +1,7 @@
 
+from typing import Annotated
 from pythonbuilding.db import get_session
-from pythonbuilding.schemas import Car, CarInput, CarOutput, CarUpdate
+from pythonbuilding.schemas import Car, CarInput, CarOutput, CarUpdate, Trip, TripInput
 from fastapi import Depends, HTTPException, APIRouter
 from sqlmodel import Session, select
  
@@ -70,3 +71,25 @@ def delete_car (id : int, session : Session = Depends(get_session)):
     session.delete(db_car)
     session.commit()
     return {"detail": "Car deleted successfully"}
+
+
+class BadTripException(Exception):
+    pass
+
+@router.post("/{car_id}/trips")
+def add_trip(
+    session: Annotated[Session, Depends(get_session)],
+    car_id: int,
+    trip_input: TripInput
+) -> Trip:
+    car = session.get(Car, car_id)
+    if car:
+        new_trip = Trip.model_validate(trip_input, update={'car_id': car_id})
+        if new_trip.end < new_trip.start:
+            raise BadTripException("Trip end before start")
+        car.trips.append(new_trip)
+        session.commit()
+        session.refresh(new_trip)
+        return new_trip
+    else:
+        raise HTTPException(status_code=404, detail=f"No car with id={car_id}.")

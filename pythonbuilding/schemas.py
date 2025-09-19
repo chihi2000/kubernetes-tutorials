@@ -52,3 +52,4 @@ class CarUpdate(CarInput):
     fuel: str | None = None
     doors: int | None = None
     transmission: str | None = None 
+    

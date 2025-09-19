@@ -1,5 +1,8 @@
-from fastapi import FastAPI, HTTPException, Depends
+import statistics
+from fastapi import FastAPI, HTTPException, Depends, Request
 from typing import Annotated
+
+from fastapi.responses import JSONResponse
 
 
 from pythonbuilding.db import get_session
@@ -16,11 +19,15 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Car Sharing", lifespan=lifespan)
-
 app.include_router(car.router)
 app.include_router(web.router)
 
-
+@app.exception_handler(BadTripException)
+async def unicorn_exception_handler(request: Request, exc : BadTripException):
+    return JSONResponse(
+        status_code=statistics.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={"message": "Bad Trip"}, 
+    )
 
 @app.post("/api/cars/{car_id}/trips")
 def add_trip(session: Annotated[Session, Depends(get_session)],
