@@ -1,5 +1,6 @@
+from os import path
 from typing import Annotated
-from fastapi import APIRouter, Depends, Form, Request
+from fastapi import APIRouter, Depends, Form, Request, Cookie
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session
@@ -25,3 +26,9 @@ def search(
         "search_results.html",
         {"request": request, "cars": cars}
     )
+
+@router.get(path= "/", response_class="templates")
+def home(request : Request, cars_cookies: Annotated[str | None, Cookie()]):
+    
+    print(cars_cookies)
+    return templates.TemplateResponse("home.html", {"request" : request})
