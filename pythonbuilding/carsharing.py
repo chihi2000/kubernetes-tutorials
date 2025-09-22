@@ -46,3 +46,9 @@ async def get_all_cars(session: Session = Depends(get_session)):
     trips = session.exec(select(Trip)).all()
     return [TripOutput.model_validate(t) for t in trips]
 
+
+@app.middleware("http")
+async def ad_cars_cookies(request: Request, call_next):
+    response = await call_next(request)
+    response.set_cookie(key = "cars_cookie", value="you_visited_carsharing_app")
+    return response
