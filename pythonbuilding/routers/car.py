@@ -1,12 +1,14 @@
 
 from typing import Annotated
 from pythonbuilding.db import get_session
-from pythonbuilding.schemas import Car, CarInput, CarOutput, CarUpdate, Trip, TripInput
+from pythonbuilding.routers.user import get_current_user
+from pythonbuilding.schemas import Car, CarInput, CarOutput, CarUpdate, Trip, TripInput, User, UserOutput
 from fastapi import Depends, HTTPException, APIRouter
 from sqlmodel import Session, select
  
 router = APIRouter(prefix="/api/cars")
- 
+
+
 @router.get("/allcars", response_model=list[CarOutput])
 async def get_all_cars(session: Session = Depends(get_session)):
     cars = session.exec(select(Car)).all()
@@ -36,13 +38,16 @@ def car_by_id(id: int, session: Session = Depends(get_session)):
 
 
 @router.post("/", response_model=CarOutput)
-def add_car(car_input: CarInput, session: Session = Depends(get_session)):
+def add_car(
+    car_input: CarInput, 
+    session: Annotated[Session, Depends(get_session)], 
+    _: Annotated[UserOutput, Depends(get_current_user)]  # enforce login
+):
     new_car = Car.model_validate(car_input)
     session.add(new_car)
     session.commit()
     session.refresh(new_car)
     return new_car
-
 
 @router.patch("/{id}", response_model=CarOutput)
 def update_car(id: int, car_update: CarUpdate, session: Session = Depends(get_session)) -> CarOutput:
@@ -93,3 +98,4 @@ def add_trip(
         return new_trip
     else:
         raise HTTPException(status_code=404, detail=f"No car with id={car_id}.")
+
