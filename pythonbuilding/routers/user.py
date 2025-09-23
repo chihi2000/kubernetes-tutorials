@@ -1,15 +1,14 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException  # Remove 'security' from here
+from fastapi import APIRouter, Depends, HTTPException  
 from sqlmodel import Session, select
 from pythonbuilding.db import engine, get_session
 from pythonbuilding.schemas import User, UserInput, hash_password, UserOutput
-from fastapi.security import HTTPBasic, HTTPBasicCredentials  # Import properly
+from fastapi.security import  OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from starlette import status
 
-
-security = HTTPBasic()
-
-router = APIRouter(prefix="/api/users")
+URL_PREFIX = "/auth"
+router = APIRouter(prefix = "/auth")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{URL_PREFIX}/token")
 
 @router.post("/signup", response_model=UserOutput)
 def create_user(user_input: UserInput):
@@ -32,17 +31,29 @@ def create_user(user_input: UserInput):
     # return user (without password)
     return UserOutput(id=user.id, username=user.username)
 
+
+@router.post("/token")
+async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+                session: Annotated[Session, Depends(get_session)]):
+    query = select(User).where(User.username== form_data.username)
+    user  = session.exec(query).first()
+    if user and user.verify_password(form_data.password):
+        return {"access_token": user.username, "token_type": "bearer"}
+    else:
+        raise HTTPException(status_code=400, detail = "Inccorect username or password")
+
 #  enforce logging in dependency
 def get_current_user(
-    credentials: Annotated[HTTPBasicCredentials, Depends(security)],  # Now using the instance
+    token: Annotated[str, Depends(oauth2_scheme)], 
     session: Annotated[Session, Depends(get_session)]
 ) -> UserOutput:
-    query = select(User).where(User.username == credentials.username)
+    query = select(User).where(User.username == token)
     user = session.exec(query).first()
-    if user and user.verify_password(credentials.password):
+    if user :
         return UserOutput.model_validate(user)  
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Username or password incorrect",
+            headers= {"WWW-Authenticate": "Bearer"}
         )

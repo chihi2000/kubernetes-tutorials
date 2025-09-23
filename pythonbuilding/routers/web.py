@@ -27,6 +27,8 @@ def search(
         {"request": request, "cars": cars}
     )
 
+
+
 # @router.get(path= "/", response_class="templates")
 # def home(request : Request, cars_cookies: Annotated[str | None, Cookie()]):
     
