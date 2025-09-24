@@ -1,13 +1,26 @@
+# pythonbuilding/db.py
+import os
 from sqlalchemy import create_engine
-from sqlmodel import Session
+from sqlalchemy.orm import sessionmaker
 
-engine = create_engine(
-    "sqlite:///carsharinf.db",
-    connect_args={"check_same_thread": False},
-    echo=True
-)
+# Read DB credentials from environment variables
+DB_USER = os.environ.get("DB_USER")
+DB_PASSWORD = os.environ.get("DB_PASSWORD")
+DB_HOST = os.environ.get("DB_HOST", "127.0.0.1")  # default if not set
+DB_PORT = os.environ.get("DB_PORT", "3306")        # default if not set
+DB_NAME = os.environ.get("DB_NAME")
 
+# Create the SQLAlchemy URL
+DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
+# Create engine and session
+engine = create_engine(DATABASE_URL, echo=True, future=True)
+SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+
+# Dependency for FastAPI routes
 def get_session():
-    with Session(engine) as session:
+    session = SessionLocal()
+    try:
         yield session
+    finally:
+        session.close()

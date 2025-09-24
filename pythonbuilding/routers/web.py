@@ -27,6 +27,10 @@ def search(
         {"request": request, "cars": cars}
     )
 
+@router.get("/signup", response_class=HTMLResponse)
+def signup_page(request: Request):
+    return templates.TemplateResponse("signup.html", {"request": request})
+
 
 
 # @router.get(path= "/", response_class="templates")
