@@ -17,8 +17,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Car Sharing", lifespan=lifespan)
-app.include_router(car.router)
 app.include_router(web.router)
+app.include_router(car.router)
 app.include_router(user.router)
 
 @app.exception_handler(car.BadTripException)

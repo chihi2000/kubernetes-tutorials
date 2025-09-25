@@ -10,26 +10,21 @@ URL_PREFIX = "/auth"
 router = APIRouter(prefix = "/auth")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{URL_PREFIX}/token")
 
-@router.post("/signup", response_model=UserOutput)
-def create_user(user_input: UserInput):
-    with Session(engine) as session:
-        # Check if username exists
-        existing_user = session.exec(select(User).where(User.username == user_input.username)).first()
-        if existing_user:
-            raise HTTPException(status_code=400, detail="Username already exists")
-
-        # create new user
-        user = User(
-            username=user_input.username,
-            password_hash=hash_password(user_input.password)
-        )
-
-        session.add(user)
-        session.commit()
-        session.refresh(user)
+def create_user(user_input: UserInput, session: Session) -> UserOutput:
+    existing_user = session.query(User).filter(User.username == user_input.username).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Username already exists")
     
-    # return user (without password)
+    user = User(
+        username=user_input.username,
+        password_hash=hash_password(user_input.password)
+    )
+    session.add(user)
+    session.commit()
+    session.refresh(user)
     return UserOutput(id=user.id, username=user.username)
+
+
 
 
 @router.post("/token")
