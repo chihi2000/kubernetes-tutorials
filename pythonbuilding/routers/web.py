@@ -1,6 +1,5 @@
-from os import path
 from typing import Annotated
-from fastapi import APIRouter, Depends, Form, HTTPException, Request, Cookie
+from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session
@@ -16,7 +15,7 @@ templates = Jinja2Templates(directory="pythonbuilding/templates")
 def home(request :Request):
     return templates.TemplateResponse("home.html", {"request" :request})
 
-@router.post(path="/search", response_class=HTMLResponse)
+@router.post("/search", response_class=HTMLResponse)
 def search(
     size: Annotated[str, Form()],
     doors: Annotated[int, Form()],
@@ -41,16 +40,15 @@ from fastapi.responses import RedirectResponse
 @router.post("/auth/signup")
 def signup_web(
     request: Request,
+    session: Annotated[Session, Depends(get_session)],
     username: str = Form(...),
-    password: str = Form(...),
-    session: Session = Depends(get_session)
+    password: str = Form(...)
 ):
     user_input = UserInput(username=username, password=password)
     try:
-        user = create_user(user_input, session)
+        create_user(user_input, session)
         # Redirect to home page
-        response = RedirectResponse(url="/", status_code=303)
-        return response
+        return RedirectResponse(url="/", status_code=303)
     except Exception as e:
         return templates.TemplateResponse(
             "signup.html",

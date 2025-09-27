@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-carsharing
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fastapi-carsharing
+  template:
+    metadata:
+      labels:
+        app: fastapi-carsharing
+    spec:
+      # imagePullSecrets not needed for AKS with ACR role assignment
+      # imagePullSecrets:
+      # - name: acr-auth
+      containers:
+      - name: fastapi-carsharing
+        image: ghadaregistry2000.azurecr.io/fastapi-carsharing:v1
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DB_HOST
+          value: "mysql-service"
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: database
+          
+        
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi-carsharing-svc
+spec:
+  type: LoadBalancer
+  selector:
+    app: fastapi-carsharing
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8000

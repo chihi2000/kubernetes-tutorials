@@ -1,0 +1,50 @@
+# Secrets and sensitive data
+secrets.yaml
+*.secret
+*.secrets
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Kubernetes specific
+kubeconfig
+*.kubeconfig
+
+# Terraform files
+terraform/**/*.tfstate
+terraform/**/*.tfstate.*
+terraform/**/*.tfplan
+terraform/**/*.tfplan.*
+terraform/**/.terraform/
+terraform/**/.terraform.lock.hcl
+terraform/**/crash.log
+terraform/**/crash.*.log
+terraform/**/*.tfvars
+terraform/**/*.tfvars.json
+terraform/**/override.tf
+terraform/**/override.tf.json
+terraform/**/*_override.tf
+terraform/**/*_override.tf.json
+terraform/**/.terraformrc
+terraform/**/terraform.rc
+
+# ACR config files (contain sensitive credentials)
+acr-config.json

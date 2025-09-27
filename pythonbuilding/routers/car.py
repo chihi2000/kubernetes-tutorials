@@ -10,16 +10,16 @@ router = APIRouter(prefix="/api/cars")
 
 
 @router.get("/allcars", response_model=list[CarOutput])
-async def get_all_cars(session: Session = Depends(get_session)):
+def get_all_cars(session: Annotated[Session, Depends(get_session)]):
     cars = session.exec(select(Car)).all()
     return [CarOutput.model_validate(c) for c in cars]
 
 
 @router.get("/")
 def get_cars(
+    session: Annotated[Session, Depends(get_session)],
     size: str | None = None,
-    doors: int | None = None,
-    session: Session = Depends(get_session)
+    doors: int | None = None
 ) -> list:
     query = select(Car)
     if size:
@@ -30,7 +30,7 @@ def get_cars(
 
 
 @router.get("/{id}", response_model=CarOutput)
-def car_by_id(id: int, session: Session = Depends(get_session)):
+def car_by_id(id: int, session: Annotated[Session, Depends(get_session)]):
     car = session.get(Car, id)
     if not car:
         raise HTTPException(status_code=404, detail="Car not found")
@@ -50,7 +50,7 @@ def add_car(
     return new_car
 
 @router.patch("/{id}", response_model=CarOutput)
-def update_car(id: int, car_update: CarUpdate, session: Session = Depends(get_session)) -> CarOutput:
+def update_car(id: int, car_update: CarUpdate, session: Annotated[Session, Depends(get_session)]) -> CarOutput:
     db_car = session.get(Car, id)
     if not db_car:
         raise HTTPException(status_code=404, detail="Car does not exist")
@@ -69,7 +69,7 @@ def update_car(id: int, car_update: CarUpdate, session: Session = Depends(get_se
 
 
 @router.delete("/{id}")
-def delete_car (id : int, session : Session = Depends(get_session)):
+def delete_car(id: int, session: Annotated[Session, Depends(get_session)]):
     db_car = session.get(Car, id)
     if not db_car:
         raise HTTPException(status_code=404, detail = "Car already not existing")

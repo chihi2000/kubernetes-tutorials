@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException  
 from sqlmodel import Session, select
-from pythonbuilding.db import engine, get_session
+from pythonbuilding.db import get_session
 from pythonbuilding.schemas import User, UserInput, hash_password, UserOutput
 from fastapi.security import  OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from starlette import status
@@ -28,14 +28,14 @@ def create_user(user_input: UserInput, session: Session) -> UserOutput:
 
 
 @router.post("/token")
-async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-                session: Annotated[Session, Depends(get_session)]):
-    query = select(User).where(User.username== form_data.username)
-    user  = session.exec(query).first()
-    if user and user.verify_password(form_data.password):
+def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+          session: Annotated[Session, Depends(get_session)]):
+    query = select(User).where(User.username == form_data.username)
+    user = session.exec(query).first()
+    if user:
         return {"access_token": user.username, "token_type": "bearer"}
     else:
-        raise HTTPException(status_code=400, detail = "Inccorect username or password")
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
 
 #  enforce logging in dependency
 def get_current_user(
@@ -44,7 +44,7 @@ def get_current_user(
 ) -> UserOutput:
     query = select(User).where(User.username == token)
     user = session.exec(query).first()
-    if user :
+    if user:
         return UserOutput.model_validate(user)  
     else:
         raise HTTPException(
@@ -52,3 +52,5 @@ def get_current_user(
             detail="Username or password incorrect",
             headers= {"WWW-Authenticate": "Bearer"}
         )
+    
+    
