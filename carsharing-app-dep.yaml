@@ -17,7 +17,7 @@ spec:
       # - name: acr-auth
       containers:
       - name: fastapi-carsharing
-        image: ghadaregistry2000.azurecr.io/fastapi-carsharing:v1
+        image: ghadaregistry2000.azurecr.io/fastapi-carsharing:v3
         ports:
         - containerPort: 8000
         env:

@@ -44,7 +44,9 @@ spec:
           mountPath: /var/lib/mysql
       volumes:
       - name: mysql-storage
-        emptyDir: {}
+        hostPath:
+          path: /mnt/mysql-data
+          type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: Service
