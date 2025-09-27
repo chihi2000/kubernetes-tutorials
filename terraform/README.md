@@ -44,7 +44,7 @@ docker push $ACR_LOGIN_SERVER/fastapi-carsharing:v1
 terraform destroy
 ```
 
-## Resources Created
+## Resources Created.
 
 - Resource Group: `rg-carsharing-tutorial`
 - Azure Container Registry: `acrcarsharing{random-suffix}`
