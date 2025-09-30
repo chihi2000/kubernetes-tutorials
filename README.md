@@ -135,26 +135,7 @@ This project provides hands-on experience with:
 5. **Database Management**: Persistent storage and data migration strategies
 6. **Application Architecture**: Microservices patterns and API design
 
-## Common Issues & Solutions
 
-### Architecture Mismatch
-**Problem**: `exec format error` on AKS
-**Solution**: Build with `--platform linux/amd64` and `--no-cache`
-
-### Data Loss
-**Problem**: Database data disappears on pod restart
-**Solution**: Use `hostPath` or `PersistentVolumeClaim` instead of `emptyDir`
-
-### Image Pull Errors
-**Problem**: AKS cannot pull from ACR
-**Solution**: Verify RBAC role assignment: `AcrPull` permission for AKS identity
-
-## Application Metrics
-
-- **FastAPI Replicas**: 2 (High Availability)
-- **MySQL Storage**: Persistent hostPath (`/mnt/mysql-data`)
-- **External Access**: LoadBalancer with public IP
-- **Database**: Full CRUD operations with relationships
 
 ## Next Steps
 
