@@ -166,5 +166,8 @@ This project provides hands-on experience with:
 
 ---
 
-Author: cloud enthusiast that hates css
+Author: cloud enthusiast who hates css
+
+##
+
 Purpose: Hands-on Kubernetes and cloud-native development education
