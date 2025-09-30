@@ -166,5 +166,5 @@ This project provides hands-on experience with:
 
 ---
 
-**Author**: Azure Solutions Architect Learning Journey
-**Purpose**: Hands-on Kubernetes and cloud-native development education
+Author: cloud enthusiast that hates css
+Purpose: Hands-on Kubernetes and cloud-native development education
