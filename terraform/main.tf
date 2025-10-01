@@ -6,13 +6,8 @@ terraform {
     }
   }
 
-  backend "remote" {
-    organization = "cloudina"
-
-    workspaces {
-      name = "carsharing-terraform"
-    }
-  }
+  # Backend removed - using local state for GitHub Actions
+  # If you want remote state, use Azure Storage backend instead of Terraform Cloud
 }
 
 
