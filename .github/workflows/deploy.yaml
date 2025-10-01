@@ -46,15 +46,15 @@ jobs:
 
     - name: build docker image
       run: |
-        docker buildx build --load -t ${{ env.APP_IMAGE }}:latest .
+        docker buildx build --load -t ${APP_IMAGE}:latest .
 
     - name: Tag Docker image
       run: |
-        docker tag ${{ env.APP_IMAGE }}:latest ${{ env.ACR_NAME }}.azurecr.io/${{ env.APP_IMAGE }}:latest
+        docker tag ${APP_IMAGE}:latest ${ACR_NAME}.azurecr.io/${APP_IMAGE}:latest
 
     - name: push docker image to acr
       run: |
-        docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.APP_IMAGE }}:latest
+        docker push ${ACR_NAME}.azurecr.io/${APP_IMAGE}:latest
         
   deploy:
     needs: [build]
