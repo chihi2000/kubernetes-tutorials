@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "azurerm" {
-   # subscription id is an env variable 
+  # subscription id is an env variable 
   features {
   }
 }
