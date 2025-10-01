@@ -46,8 +46,6 @@ jobs:
 
     - name: Terraform Init
       run: terraform init
-      env:
-        TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
 
     - name: Terraform Format
       run: terraform fmt -recursive
@@ -58,14 +56,10 @@ jobs:
     - name: Terraform Plan
       run: terraform plan -no-color -input=false -var="acr_name=${{ secrets.ACR_NAME }}"
       continue-on-error: true
-      env:
-        TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
 
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false -var="acr_name=${{ secrets.ACR_NAME }}"
-      env:
-        TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
 
     - name: Get AKS Credentials
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
