@@ -46,7 +46,7 @@ jobs:
 
     - name: build docker image
       run: |
-        docker build -t ${{ env.APP_IMAGE }}:latest .
+        docker build -t ${{ env.APP_IMAGE }}:latest -f Dockerfile .
 
     - name: Tag Docker image
       run: |
