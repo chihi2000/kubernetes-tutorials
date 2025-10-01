@@ -77,10 +77,6 @@ jobs:
         cluster-name: ${{ env.CLUSTER_NAME }}
         resource-group: ${{ env.RG }}
 
-    - name: deploy secrets
-      run: |
-        kubectl apply -f secrets.yaml
-
     - name: deploy the database
       run: |
         kubectl apply -f mysql-dep.yaml
