@@ -12,12 +12,10 @@ spec:
       labels:
         app: fastapi-carsharing
     spec:
-      # imagePullSecrets not needed for AKS with ACR role assignment
-      # imagePullSecrets:
-      # - name: acr-auth
+      
       containers:
       - name: fastapi-carsharing
-        image: ghadaregistry2000.azurecr.io/fastapi-carsharing:v3
+        image: ${ACR_NAME}.azurecr.io/fastapi-carsharing:latest
         ports:
         - containerPort: 8000
         env:
