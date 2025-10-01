@@ -1,0 +1,97 @@
+name: Carsharin-app Deployment
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'terraform/**'
+      - '**.md'
+      - '.gitignore'
+      - 'LICENSE'
+      - '.github/workflows/infrastructure.yml'
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - 'terraform/**'
+      - '**.md'
+      - '.gitignore'
+      - 'LICENSE'
+      - '.github/workflows/infrastructure.yml'
+  workflow_dispatch:
+
+env:
+  ACR_NAME: ${{ secrets.ACR_NAME }}
+  APP_IMAGE: ${{ secrets.APP_IMAGE }}
+  CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
+  RG: ${{ secrets.RG }}
+
+jobs:
+  build:
+    name: build docker image
+    runs-on: ubuntu-latest
+    
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: login to the acr
+      run: |
+        az acr login --name $ACR_NAME
+
+    - name: build docker image
+      run: |
+        docker build -t ${{ env.APP_IMAGE }}:latest .
+
+    - name: Tag Docker image
+      run: |
+        docker tag ${{ env.APP_IMAGE }}:latest ${{ env.ACR_NAME }}.azurecr.io/${{ env.APP_IMAGE }}:latest
+
+    - name: push docker image to acr
+      run: |
+        docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.APP_IMAGE }}:latest
+        
+  deploy:
+    needs: [build]
+    name: deploy to aks clusters
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Set up AKS credentials
+      uses: azure/aks-set-context@v3
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        cluster-name: ${{ env.CLUSTER_NAME }}
+        resource-group: ${{ env.RG }}
+
+    - name: deploy secrets
+      run: |
+        kubectl apply -f secrets.yaml
+
+    - name: deploy the database
+      run: |
+        kubectl apply -f mysql-dep.yaml
+
+    - name: deploy the app
+      run: |
+        envsubst < carsharing-app-dep.yaml | kubectl apply -f -
+      env:
+        ACR_NAME: ${{ env.ACR_NAME }}
+
+
+    
+      
+

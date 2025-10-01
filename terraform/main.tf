@@ -5,7 +5,17 @@ terraform {
       version = "~>3.0"
     }
   }
+
+  backend "remote" {
+    organization = "cloudina"
+
+    workspaces {
+      name = "carsharing-terraform"
+    }
+  }
 }
+
+
 
 provider "azurerm" {
   # subscription id is an env variable 
@@ -15,37 +25,37 @@ provider "azurerm" {
 
 # Resource Group
 resource "azurerm_resource_group" "main" {
-  name     = "rg-carsharing-tutorial"
-  location = "East US"
+  name     = var.resource_group_name
+  location = var.location
 
   tags = {
-    Environment = "Tutorial"
-    Project     = "Carsharing"
+    Environment = var.environment
+    Project     = var.project_name
     AutoDelete  = "true"
   }
 }
 
 # Azure Container Registry
 resource "azurerm_container_registry" "main" {
-  name                = "ghadaregistry2000"
+  name                = var.acr_name
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   sku                 = "Basic"
   admin_enabled       = true
 
   tags = {
-    Environment = "Tutorial"
-    Project     = "Carsharing"
+    Environment = var.environment
+    Project     = var.project_name
     AutoDelete  = "true"
   }
 }
 
 # Azure Kubernetes Service
 resource "azurerm_kubernetes_cluster" "main" {
-  name                = "aks-carsharing-tutorial"
+  name                = var.aks_cluster_name
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
-  dns_prefix          = "aks-carsharing"
+  dns_prefix          = "${var.project_name}-aks"
 
   default_node_pool {
     name       = "default"
@@ -58,8 +68,8 @@ resource "azurerm_kubernetes_cluster" "main" {
   }
 
   tags = {
-    Environment = "Tutorial"
-    Project     = "Carsharing"
+    Environment = var.environment
+    Project     = var.project_name
     AutoDelete  = "true"
   }
 }

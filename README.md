@@ -75,11 +75,11 @@ terraform apply
 ### 2. Build & Push Container
 ```bash
 # Login to Azure Container Registry
-az acr login --name ghadaregistry2000
+az acr login --name <YOUR-ACR-NAME>
 
 # Build for AMD64 (AKS compatibility)
-docker build --platform linux/amd64 -t ghadaregistry2000.azurecr.io/fastapi-carsharing:v3 .
-docker push ghadaregistry2000.azurecr.io/fastapi-carsharing:v3
+docker build --platform linux/amd64 -t <YOUR-ACR-NAME>.azurecr.io/fastapi-carsharing:latest .
+docker push <YOUR-ACR-NAME>.azurecr.io/fastapi-carsharing:latest
 ```
 
 ### 3. Deploy to Kubernetes

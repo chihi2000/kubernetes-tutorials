@@ -1,0 +1,13 @@
+# Example Terraform variables file
+# Copy this file to terraform.tfvars and fill in your values
+# terraform.tfvars is gitignored and will not be committed
+
+# Azure Container Registry name (must be globally unique, alphanumeric only)
+acr_name = "your-unique-acr-name"
+
+# Optional: Override defaults
+# resource_group_name = "rg-carsharing-tutorial"
+# aks_cluster_name = "aks-carsharing-tutorial"
+# location = "East US"
+# environment = "tutorial"
+# project_name = "carsharing"
