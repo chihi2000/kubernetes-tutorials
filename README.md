@@ -141,7 +141,6 @@ This project provides hands-on experience with:
 
 - [ ] Implement SSL/TLS certificates
 - [ ] Add Prometheus monitoring
-- [ ] Set up CI/CD pipeline
 - [ ] Configure auto-scaling policies
 - [ ] Add comprehensive logging with ELK stack
 
